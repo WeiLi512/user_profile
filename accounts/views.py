@@ -57,7 +57,7 @@ def sign_out(request):
 
 
 def show_profile(request):
-    return HttpResponse('show_profile')
+    return render(request, 'accounts/show_profile.html')
 
 
 def edit_profile(request):
