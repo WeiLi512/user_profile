@@ -1,9 +1,14 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, PasswordChangeForm
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, redirect
+from django.db import transaction
+from django.utils.translation import ugettext_lazy as _
+
+from .forms import UserForm, ProfileForm, ChangePasswordForm
 
 
 def sign_in(request):
@@ -56,13 +61,49 @@ def sign_out(request):
     return HttpResponseRedirect(reverse('home'))
 
 
+@login_required
 def show_profile(request):
     return render(request, 'accounts/show_profile.html')
 
 
+@login_required
+@transaction.atomic
 def edit_profile(request):
-    return HttpResponse('edit_profile')
+    if request.method == 'POST':
+        user_form = UserForm(request.POST, instance=request.user)
+        profile_form = ProfileForm(request.POST, instance=request.user.profile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, _('Your profile was successfully updated!'))
+            return redirect('accounts:show_profile')
+        else:
+            messages.error(request, _('Please correct the error below.'))
+    else:
+        user_form = UserForm(instance=request.user)
+        profile_form = ProfileForm(instance=request.user.profile)
+    return render(request, 'accounts/edit_profile.html', {
+        'user_form': user_form,
+        'profile_form': profile_form
+    })
 
 
+@login_required
+@transaction.atomic
 def change_password(request):
-    return HttpResponse('change_password')
+    if request.method == 'POST':
+        password_form = ChangePasswordForm(data=request.POST, user=request.user)
+        if password_form.is_valid():
+            user = request.user
+            user.set_password(password_form.cleaned_data['new_password'])
+            user.save()
+            update_session_auth_hash(request, password_form.user)
+            messages.success(request, _('Your password was successfully updated!'))
+            return redirect('accounts:show_profile')
+        else:
+            messages.error(request, _('Please correct the error below.'))
+    else:
+        password_form = ChangePasswordForm(user=request.user)
+    return render(request, 'accounts/change_password.html', {
+        'password_form': password_form
+    })

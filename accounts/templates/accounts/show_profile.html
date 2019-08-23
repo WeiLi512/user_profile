@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block body %}
+<div class="grid-75">
+    <h2>username: {{ user.username }}</h2>
+    <ul>
+      <li>First Name: {{ user.first_name }}</li>
+      <li>Last Name: {{ user.last_name }}</li>
+      <li>Email: {{ user.email }}</li>
+      <li>Date of Birth: {{ user.profile.birth_date }}</li>
+      <li>Bio: {{ user.profile.bio }}</li>
+    </ul>
+</div>
+<div class="grid-25">
+</div>
+{% endblock %}
