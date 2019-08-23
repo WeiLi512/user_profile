@@ -3,7 +3,7 @@
 {% block title %}Edit Profile{% endblock %}
 
 {% block body %}
-<form method="post" action="{% url 'accounts:edit_profile' %}">
+<form method="post" action="{% url 'accounts:edit_profile' %}" enctype="multipart/form-data">
   {% csrf_token %}
   {{ user_form.as_p }}
   {{ profile_form.as_p }}

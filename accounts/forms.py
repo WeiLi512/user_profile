@@ -29,7 +29,7 @@ class UserForm(forms.ModelForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('date_of_birth', 'bio')
+        fields = ('date_of_birth', 'bio', 'avatar')
 
     def clean_bio(self):
         bio = self.cleaned_data.get('bio')
