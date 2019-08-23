@@ -10,11 +10,32 @@ class UserForm(forms.ModelForm):
         model = User
         fields = ('first_name', 'last_name', 'email')
 
+    confirm_email = forms.EmailField()
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not email:
+            raise forms.ValidationError('This field is required.')
+        return email
+
+    def clean_confirm_email(self):
+        email = self.cleaned_data.get('email')
+        confirm_email = self.cleaned_data.get('confirm_email')
+        if email is not None and email != confirm_email:
+            raise forms.ValidationError('Please enter same email address.')
+        return confirm_email
+
 
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('birth_date', 'bio')
+        fields = ('date_of_birth', 'bio')
+
+    def clean_bio(self):
+        bio = self.cleaned_data.get('bio')
+        if len(bio) < 10:
+            raise forms.ValidationError('Bio must be 10 characters or longer.')
+        return bio
 
 
 class ChangePasswordForm(forms.Form):
