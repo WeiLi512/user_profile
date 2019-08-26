@@ -80,7 +80,7 @@ def edit_profile(request):
         else:
             messages.error(request, _('Please correct the error below.'))
     else:
-        user_form = UserForm(instance=request.user)
+        user_form = UserForm(instance=request.user, initial={'confirm_email': request.user.email})
         profile_form = ProfileForm(instance=request.user.profile)
     return render(request, 'accounts/edit_profile.html', {
         'user_form': user_form,
