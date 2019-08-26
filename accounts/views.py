@@ -12,6 +12,9 @@ from .forms import UserForm, ProfileForm, ChangePasswordForm
 
 
 def sign_in(request):
+    """
+    Sign in view
+    """
     form = AuthenticationForm()
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
@@ -37,6 +40,9 @@ def sign_in(request):
 
 
 def sign_up(request):
+    """
+    Sign up view
+    """
     form = UserCreationForm()
     if request.method == 'POST':
         form = UserCreationForm(data=request.POST)
@@ -56,6 +62,9 @@ def sign_up(request):
 
 
 def sign_out(request):
+    """
+    Sign out view
+    """
     logout(request)
     messages.success(request, "You've been signed out. Come back soon!")
     return HttpResponseRedirect(reverse('home'))
@@ -63,12 +72,18 @@ def sign_out(request):
 
 @login_required
 def show_profile(request):
+    """
+    Show profile view
+    """
     return render(request, 'accounts/show_profile.html')
 
 
 @login_required
 @transaction.atomic
 def edit_profile(request):
+    """
+    Edit profile view
+    """
     if request.method == 'POST':
         user_form = UserForm(request.POST, instance=request.user)
         profile_form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
@@ -91,6 +106,9 @@ def edit_profile(request):
 @login_required
 @transaction.atomic
 def change_password(request):
+    """
+    Change password view
+    """
     if request.method == 'POST':
         password_form = ChangePasswordForm(data=request.POST, user=request.user)
         if password_form.is_valid():
